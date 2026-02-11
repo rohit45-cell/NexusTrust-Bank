@@ -1,0 +1,196 @@
+{% extends 'bankapp/base.html' %}
+{% load static %}
+
+{% block title %}Home - India's Most Trusted Digital Bank{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="gradient-banner">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Empowering India's Digital Banking Future</h1>
+                <p class="lead mb-4">Experience secure, smart, and seamless banking with NexusTrust Bank. Your trusted partner in financial growth.</p>
+                {% if not user.is_authenticated %}
+                <div class="d-flex gap-3">
+                    <a href="{% url 'signup' %}" class="btn btn-light btn-lg px-5">Open Account</a>
+                    <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg px-5">Login</a>
+                </div>
+                {% else %}
+                <a href="{% url 'dashboard' %}" class="btn btn-light btn-lg px-5">Go to Dashboard</a>
+                {% endif %}
+            </div>
+            <div class="col-lg-6">
+                <img src="{% static 'bankapp/img/fi.png' %}" alt="Banking" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="container my-5">
+    <div class="row text-center">
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <h3 class="display-6 fw-bold text-primary">{{ total_users }}+</h3>
+                <p class="text-muted">Happy Customers</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <h3 class="display-6 fw-bold text-primary">{{ total_transactions }}+</h3>
+                <p class="text-muted">Transactions</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <h3 class="display-6 fw-bold text-primary">{{ total_account_types }}</h3>
+                <p class="text-muted">Account Types</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <h3 class="display-6 fw-bold text-primary">24/7</h3>
+                <p class="text-muted">Customer Support</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="container my-5">
+    <div class="text-center mb-5">
+        <h2 class="display-6 fw-bold">Why Choose NexusTrust Bank?</h2>
+        <p class="lead text-muted">Experience banking that's built around you</p>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 p-4">
+                <div class="text-center">
+                    <i class="bi bi-shield-check display-4 text-primary"></i>
+                    <h4 class="mt-3">100% Secure</h4>
+                    <p class="text-muted">Bank-grade security with encryption and fraud protection</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 p-4">
+                <div class="text-center">
+                    <i class="bi bi-lightning-charge display-4 text-primary"></i>
+                    <h4 class="mt-3">Instant Transfers</h4>
+                    <p class="text-muted">Real-time money transfers 24/7, 365 days a year</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 p-4">
+                <div class="text-center">
+                    <i class="bi bi-currency-rupee display-4 text-primary"></i>
+                    <h4 class="mt-3">Zero Balance</h4>
+                    <p class="text-muted">Open account with zero minimum balance requirement</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 p-4">
+                <div class="text-center">
+                    <i class="bi bi-graph-up display-4 text-primary"></i>
+                    <h4 class="mt-3">Higher Interest</h4>
+                    <p class="text-muted">Competitive interest rates on savings and deposits</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 p-4">
+                <div class="text-center">
+                    <i class="bi bi-phone display-4 text-primary"></i>
+                    <h4 class="mt-3">Mobile Banking</h4>
+                    <p class="text-muted">Bank anytime, anywhere with our mobile app</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 p-4">
+                <div class="text-center">
+                    <i class="bi bi-headset display-4 text-primary"></i>
+                    <h4 class="mt-3">24/7 Support</h4>
+                    <p class="text-muted">Round-the-clock customer service in your language</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Account Types Section -->
+<section class="container my-5">
+    <div class="text-center mb-5">
+        <h2 class="display-6 fw-bold">Accounts for Every Need</h2>
+        <p class="lead text-muted">Choose the account that fits your lifestyle</p>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card h-100 p-4">
+                <div class="text-center">
+                    <i class="bi bi-piggy-bank display-4 text-primary"></i>
+                    <h4 class="mt-3">Savings Account</h4>
+                    <p class="text-muted">Start saving with as low as ₹500</p>
+                    <ul class="list-unstyled mt-3">
+                        <li class="mb-2"><i class="bi bi-check-circle text-success"></i> 3.5% interest p.a.</li>
+                        <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Free ATM card</li>
+                        <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Zero balance option</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card h-100 p-4 border-primary">
+                <div class="text-center">
+                    <i class="bi bi-briefcase display-4 text-primary"></i>
+                    <h4 class="mt-3">Current Account</h4>
+                    <p class="text-muted">Perfect for businesses and professionals</p>
+                    <ul class="list-unstyled mt-3">
+                        <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Overdraft facility</li>
+                        <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Free business banking</li>
+                        <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Unlimited transactions</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card h-100 p-4">
+                <div class="text-center">
+                    <i class="bi bi-calendar-check display-4 text-primary"></i>
+                    <h4 class="mt-3">Fixed Deposit</h4>
+                    <p class="text-muted">Higher returns on your savings</p>
+                    <ul class="list-unstyled mt-3">
+                        <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Up to 7% interest p.a.</li>
+                        <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Flexible tenures</li>
+                        <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Loan against FD</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="container my-5">
+    <div class="card bg-primary text-white p-5">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h3 class="fw-bold">Ready to start your banking journey?</h3>
+                <p class="lead mb-0">Join millions of happy customers who trust NexusTrust Bank</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                {% if not user.is_authenticated %}
+                <a href="{% url 'signup' %}" class="btn btn-light btn-lg px-5">Open Account Now</a>
+                {% else %}
+                <a href="{% url 'dashboard' %}" class="btn btn-light btn-lg px-5">Go to Dashboard</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

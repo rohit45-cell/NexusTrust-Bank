@@ -1,0 +1,194 @@
+{% extends 'bankapp/base.html' %}
+{% load static %}
+
+{% block title %}Manage Transactions - Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="bi bi-arrow-left-right"></i>
+            Manage Transactions
+        </h2>
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+    
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Search</label>
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control" 
+                               placeholder="Transaction ID, User, Account..." value="{{ request.GET.search }}">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Transaction Type</label>
+                    <select name="type" class="form-select">
+                        <option value="">All Types</option>
+                        {% for value, label in transaction_types %}
+                        <option value="{{ value }}" {% if request.GET.type == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="">All Status</option>
+                        {% for value, label in status_choices %}
+                        <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <a href="{% url 'manage_transactions' %}" class="btn btn-outline-secondary w-100">
+                        <i class="bi bi-x-circle"></i> Clear
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Transactions Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>Date & Time</th>
+                            <th>User</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Rollback</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transaction in transactions %}
+                        <tr class="{% if transaction.is_rolled_back %}table-warning{% endif %}">
+                            <td>
+                                <span class="small">{{ transaction.transaction_id|truncatechars:12 }}</span>
+                            </td>
+                            <td>
+                                {{ transaction.created_at|date:"d/m/Y" }}
+                                <small class="text-muted d-block">{{ transaction.created_at|time:"H:i:s" }}</small>
+                            </td>
+                            <td>
+                                {{ transaction.user.full_name|truncatechars:20 }}
+                                <small class="text-muted d-block">{{ transaction.user.account_number }}</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-{% if transaction.transaction_type == 'deposit' %}success{% elif transaction.transaction_type == 'withdraw' %}danger{% elif transaction.transaction_type == 'transfer' %}primary{% else %}info{% endif %}">
+                                    {{ transaction.get_transaction_type_display }}
+                                </span>
+                            </td>
+                            <td class="{% if transaction.transaction_type == 'deposit' %}text-success{% else %}text-danger{% endif %} fw-bold">
+                                ₹{{ transaction.amount|floatformat:2 }}
+                            </td>
+                            <td>
+                                {% if transaction.status == 'completed' %}
+                                    <span class="badge bg-success">Completed</span>
+                                {% elif transaction.status == 'pending' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% elif transaction.status == 'failed' %}
+                                    <span class="badge bg-danger">Failed</span>
+                                {% elif transaction.status == 'rolled_back' %}
+                                    <span class="badge bg-secondary">Rolled Back</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if transaction.is_rolled_back %}
+                                    <span class="badge bg-warning">Yes</span>
+                                {% else %}
+                                    <span class="badge bg-success">No</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'transaction_detail' transaction.transaction_id %}" 
+                                       class="btn btn-outline-primary" title="View">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    {% if not transaction.is_rolled_back and transaction.status == 'completed' %}
+                                    <a href="{% url 'rollback_transaction' transaction.id %}" 
+                                       class="btn btn-outline-warning" title="Rollback">
+                                        <i class="bi bi-arrow-counterclockwise"></i>
+                                    </a>
+                                    {% endif %}
+                                    <a href="{% url 'edit_transaction' transaction.id %}" 
+                                       class="btn btn-outline-secondary" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'delete_transaction' transaction.id %}" 
+                                       class="btn btn-outline-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-5">
+                                <i class="bi bi-arrow-left-right fs-1 d-block mb-3 text-muted"></i>
+                                <h5 class="text-muted">No transactions found</h5>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            {% if transactions.has_other_pages %}
+            <nav aria-label="Transaction pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if transactions.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ transactions.previous_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                            Previous
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for i in transactions.paginator.page_range %}
+                        {% if transactions.number == i %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ i }}</span>
+                        </li>
+                        {% elif i > transactions.number|add:'-3' and i < transactions.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ i }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                                {{ i }}
+                            </a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if transactions.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ transactions.next_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                            Next
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

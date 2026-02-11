@@ -1,0 +1,70 @@
+{% extends 'bankapp/base.html' %}
+{% load static %}
+
+{% block title %}Login - NexusTrust Bank{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card">
+                <div class="card-header bg-white text-center">
+                    <h3 class="mb-0">
+                        <i class="bi bi-bank2"></i> NexusTrust Bank
+                    </h3>
+                    <p class="text-muted mb-0">Welcome back! Please login to your account</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Email Address</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger mt-1">{{ form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            {{ form.password }}
+                            {% if form.password.errors %}
+                                <div class="text-danger mt-1">{{ form.password.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3 d-flex justify-content-between align-items-center">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="remember">
+                                <label class="form-check-label" for="remember">Remember me</label>
+                            </div>
+                            <a href="{% url 'password_reset' %}" class="text-decoration-none">Forgot Password?</a>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-box-arrow-in-right"></i> Login
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="text-center">
+                        <p class="mb-0">Don't have an account? <a href="{% url 'signup' %}" class="text-decoration-none fw-bold">Sign Up Now</a></p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Security Notice -->
+            <div class="card mt-4">
+                <div class="card-body text-center">
+                    <i class="bi bi-shield-check text-success fs-4"></i>
+                    <p class="mb-0 small text-muted">Secure login with 256-bit encryption. Never share your credentials.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

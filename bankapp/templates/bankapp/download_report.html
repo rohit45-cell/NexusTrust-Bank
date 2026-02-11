@@ -1,0 +1,99 @@
+{% extends 'bankapp/base.html' %}
+{% load static %}
+
+{% block title %}Download Report - NexusTrust Bank{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-download"></i>
+                        Download Transaction Report
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">From Date</label>
+                                {{ form.date_from }}
+                                <small class="text-muted">Leave blank to include all transactions</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">To Date</label>
+                                {{ form.date_to }}
+                                <small class="text-muted">Leave blank to include all transactions</small>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Transaction Type</label>
+                                {{ form.transaction_type }}
+                                <small class="text-muted">Select specific transaction type or leave as 'All'</small>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Report Format</label>
+                                <div class="d-flex gap-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="format" id="formatCSV" value="csv" checked>
+                                        <label class="form-check-label" for="formatCSV">
+                                            <i class="bi bi-file-earmark-spreadsheet text-success"></i>
+                                            CSV Format (Excel)
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="format" id="formatPDF" value="pdf">
+                                        <label class="form-check-label" for="formatPDF">
+                                            <i class="bi bi-file-earmark-pdf text-danger"></i>
+                                            PDF Format
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <hr>
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i>
+                                    Your report will include:
+                                    <ul class="mb-0 mt-2">
+                                        <li>Transaction ID and date</li>
+                                        <li>Transaction type and amount</li>
+                                        <li>Balance after transaction</li>
+                                        <li>Description and status</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="bi bi-download"></i> Generate & Download Report
+                                    </button>
+                                    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                                        Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Recent Reports -->
+            <div class="card mt-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Recent Reports</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted text-center mb-0 py-3">
+                        <i class="bi bi-clock-history"></i>
+                        No recent reports generated
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

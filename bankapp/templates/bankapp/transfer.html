@@ -1,0 +1,308 @@
+{% extends 'bankapp/base.html' %}
+{% load static %}
+
+{% block title %}Transfer Money{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-arrow-left-right text-primary"></i>
+                        Transfer Money
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Current Balance -->
+                    <div class="alert alert-info">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <small class="text-muted d-block">Available Balance</small>
+                                <h3 class="mb-0 fw-bold">₹{{ user.get_available_balance|floatformat:2 }}</h3>
+                                <small class="text-muted">Actual balance: ₹{{ user.balance|floatformat:2 }}</small>
+                            </div>
+                            <div class="col-auto">
+                                <i class="bi bi-wallet2 fs-1 text-muted"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Account Limits -->
+                    <div class="row mb-4">
+                        <div class="col-6">
+                            <div class="p-3 bg-light rounded">
+                                <small class="text-muted d-block">Minimum Balance</small>
+                                <strong>₹{{ user.get_minimum_balance|floatformat:2 }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 bg-light rounded">
+                                <small class="text-muted d-block">Overdraft Limit</small>
+                                <strong>₹{{ user.get_overdraft_limit|floatformat:2 }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- TRANSFER FORM -->
+                    <form method="post" action="{% url 'transfer' %}" class="mt-4" onsubmit="return confirmTransfer();">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.receiver_account.id_for_label }}" class="form-label fw-semibold">
+                                Receiver's Account Number
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-person"></i>
+                                </span>
+                                {{ form.receiver_account }}
+                            </div>
+                            {% if form.receiver_account.errors %}
+                                <div class="text-danger mt-1">
+                                    {{ form.receiver_account.errors }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Enter the 16-digit NexusTrust account number (e.g., NTB24021112345678)</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.amount.id_for_label }}" class="form-label fw-semibold">
+                                Amount (₹)
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                {{ form.amount }}
+                            </div>
+                            {% if form.amount.errors %}
+                                <div class="text-danger mt-1">
+                                    {{ form.amount.errors }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                Max transfer: ₹{{ user.get_available_balance|floatformat:2 }}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.description.id_for_label }}" class="form-label fw-semibold">
+                                Description (Optional)
+                            </label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger mt-1">
+                                    {{ form.description.errors }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Add a note for the receiver (max 200 characters)</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-arrow-left-right"></i>
+                                Transfer Now
+                            </button>
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Transfer Information -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-info-circle"></i>
+                        Transfer Information
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2">
+                                    <i class="bi bi-check-circle text-success"></i>
+                                    Instant transfer to any NexusTrust account
+                                </li>
+                                <li class="mb-2">
+                                    <i class="bi bi-check-circle text-success"></i>
+                                    No transfer fees
+                                </li>
+                                <li class="mb-2">
+                                    <i class="bi bi-check-circle text-success"></i>
+                                    Both parties receive email confirmation
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2">
+                                    <i class="bi bi-shield-check text-primary"></i>
+                                    256-bit SSL encrypted transaction
+                                </li>
+                                <li class="mb-2">
+                                    <i class="bi bi-clock-history"></i>
+                                    Available 24/7, 365 days
+                                </li>
+                                <li class="mb-2">
+                                    <i class="bi bi-arrow-repeat"></i>
+                                    Track status in transaction history
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Beneficiaries - FIXED: Removed invalid template syntax -->
+            <div class="card mt-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-star"></i>
+                        Recent Beneficiaries
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% with recent_transfers=user.received_transactions.all %}
+                        {% if recent_transfers %}
+                            <div class="row g-2">
+                                {% for transfer in recent_transfers|slice:":5" %}
+                                    {% if transfer.user and transfer.user != user %}
+                                        <div class="col-md-4 col-6">
+                                            <button class="btn btn-outline-secondary w-100 beneficiary-btn" 
+                                                    onclick="fillBeneficiary('{{ transfer.user.account_number }}')">
+                                                <i class="bi bi-person-circle"></i><br>
+                                                <small>{{ transfer.user.full_name|truncatechars:15 }}</small>
+                                                <br>
+                                                <small class="text-muted">{{ transfer.user.account_number|truncatechars:12 }}</small>
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                {% empty %}
+                                    <p class="text-muted text-center mb-0">No recent beneficiaries</p>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted text-center mb-0">No recent beneficiaries</p>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .beneficiary-btn {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 5px;
+        white-space: normal;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition: all 0.3s ease;
+    }
+    .beneficiary-btn i {
+        font-size: 1.5rem;
+        margin-bottom: 5px;
+    }
+    .beneficiary-btn:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-color: transparent;
+    }
+    .beneficiary-btn:hover small {
+        color: rgba(255,255,255,0.9) !important;
+    }
+</style>
+
+<script>
+// Confirm transfer before submission
+function confirmTransfer() {
+    const amount = document.getElementById('{{ form.amount.id_for_label }}');
+    const receiver = document.getElementById('{{ form.receiver_account.id_for_label }}');
+    
+    if (!receiver.value) {
+        alert('Please enter receiver account number');
+        receiver.focus();
+        return false;
+    }
+    
+    if (!amount.value || parseFloat(amount.value) <= 0) {
+        alert('Please enter a valid amount');
+        amount.focus();
+        return false;
+    }
+    
+    const amountVal = parseFloat(amount.value).toFixed(2);
+    return confirm(`Are you sure you want to transfer ₹${amountVal} to account ${receiver.value}?`);
+}
+
+// Auto-uppercase account number
+document.addEventListener('DOMContentLoaded', function() {
+    const receiverInput = document.getElementById('{{ form.receiver_account.id_for_label }}');
+    if (receiverInput) {
+        receiverInput.addEventListener('input', function(e) {
+            this.value = this.value.toUpperCase();
+        });
+    }
+});
+
+// Fill beneficiary account number
+function fillBeneficiary(accountNumber) {
+    const receiverInput = document.getElementById('{{ form.receiver_account.id_for_label }}');
+    if (receiverInput) {
+        receiverInput.value = accountNumber;
+        receiverInput.focus();
+    }
+}
+
+// Format amount as Indian currency
+document.addEventListener('DOMContentLoaded', function() {
+    const amountInput = document.getElementById('{{ form.amount.id_for_label }}');
+    if (amountInput) {
+        amountInput.addEventListener('blur', function() {
+            if (this.value) {
+                let amount = parseFloat(this.value);
+                if (!isNaN(amount) && amount > 0) {
+                    this.value = amount.toFixed(2);
+                } else {
+                    this.value = '';
+                }
+            }
+        });
+        
+        // Prevent negative values
+        amountInput.addEventListener('keydown', function(e) {
+            if (e.key === '-' || e.key === 'e') {
+                e.preventDefault();
+            }
+        });
+    }
+});
+
+// Check if account exists (optional - uncomment if you have the API endpoint)
+/*
+function checkAccount() {
+    const accountInput = document.getElementById('{{ form.receiver_account.id_for_label }}');
+    const account = accountInput.value;
+    
+    if (account.length >= 16) {
+        fetch(`/api/verify-account/${account}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.exists) {
+                    accountInput.classList.add('is-valid');
+                    accountInput.classList.remove('is-invalid');
+                } else {
+                    accountInput.classList.add('is-invalid');
+                    accountInput.classList.remove('is-valid');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+}
+*/
+</script>
+{% endblock %}

@@ -1,0 +1,337 @@
+{% extends 'bankapp/base.html' %}
+{% load static %}
+
+{% block title %}Bank Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Welcome Banner -->
+    <div class="gradient-banner">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h2 class="display-6 fw-bold">
+                    <i class="bi bi-shield-lock"></i> 
+                    Bank Administration
+                </h2>
+                <p class="lead mb-0">Welcome back, {{ user.full_name }}! ({{ user.get_account_type_name }})</p>
+                <div class="mt-2">
+                    <span class="badge bg-light text-dark p-2">
+                        <i class="bi bi-building"></i> NexusTrust Bank Admin
+                    </span>
+                    <span class="badge bg-warning text-dark p-2 ms-2">
+                        <i class="bi bi-shield-check"></i> {{ user.get_account_type_category|title }} Administrator
+                    </span>
+                </div>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <div class="bg-white bg-opacity-20 rounded p-3 d-inline-block">
+                    <small class="text-white d-block">System Time</small>
+                    <strong class="text-white">{{ now|date:"d M Y H:i" }}</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Total Users</h6>
+                            <h2 class="mb-0 fw-bold">{{ total_users }}</h2>
+                            <small class="text-success">
+                                <i class="bi bi-arrow-up"></i> {{ active_users }} Active
+                            </small>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+                            <i class="bi bi-people fs-1 text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Frozen Accounts</h6>
+                            <h2 class="mb-0 fw-bold text-warning">{{ frozen_users }}</h2>
+                            <small class="text-muted">Need attention</small>
+                        </div>
+                        <div class="bg-warning bg-opacity-10 p-3 rounded-circle">
+                            <i class="bi bi-snow2 fs-1 text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Total Transactions</h6>
+                            <h2 class="mb-0 fw-bold">{{ total_transactions }}</h2>
+                            <small>₹{{ total_deposits|floatformat:0 }} Deposits</small>
+                        </div>
+                        <div class="bg-success bg-opacity-10 p-3 rounded-circle">
+                            <i class="bi bi-arrow-left-right fs-1 text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Pending Queries</h6>
+                            <h2 class="mb-0 fw-bold">{{ pending_contacts }}</h2>
+                            <small class="text-warning">/ {{ total_contacts }} Total</small>
+                        </div>
+                        <div class="bg-info bg-opacity-10 p-3 rounded-circle">
+                            <i class="bi bi-envelope fs-1 text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0">
+                        <i class="bi bi-lightning-charge text-primary"></i>
+                        Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3 col-6">
+                            <a href="{% url 'manage_users' %}" class="btn btn-outline-primary w-100 py-3">
+                                <i class="bi bi-people d-block fs-2 mb-2"></i>
+                                Manage Users
+                                <small class="d-block text-muted">View & Edit Users</small>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <a href="{% url 'manage_account_types' %}" class="btn btn-outline-success w-100 py-3">
+                                <i class="bi bi-card-list d-block fs-2 mb-2"></i>
+                                Account Types
+                                <small class="d-block text-muted">Interest & Limits</small>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <a href="{% url 'manage_transactions' %}" class="btn btn-outline-info w-100 py-3">
+                                <i class="bi bi-arrow-left-right d-block fs-2 mb-2"></i>
+                                Transactions
+                                <small class="d-block text-muted">Rollback & Edit</small>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <a href="{% url 'reports' %}" class="btn btn-outline-warning w-100 py-3">
+                                <i class="bi bi-graph-up d-block fs-2 mb-2"></i>
+                                Reports
+                                <small class="d-block text-muted">Export CSV/PDF</small>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Recent Transactions -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clock-history text-primary"></i>
+                        Recent Transactions
+                    </h5>
+                    <a href="{% url 'manage_transactions' %}" class="btn btn-sm btn-primary">
+                        View All <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>User</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in recent_transactions %}
+                                <tr>
+                                    <td>
+                                        <span class="small">{{ transaction.transaction_id|truncatechars:12 }}</span>
+                                    </td>
+                                    <td>{{ transaction.user.full_name|truncatechars:15 }}</td>
+                                    <td>
+                                        <span class="badge bg-{% if transaction.transaction_type == 'deposit' %}success{% elif transaction.transaction_type == 'withdraw' %}danger{% else %}primary{% endif %}">
+                                            {{ transaction.get_transaction_type_display }}
+                                        </span>
+                                    </td>
+                                    <td class="fw-bold {% if transaction.transaction_type == 'deposit' %}text-success{% else %}text-danger{% endif %}">
+                                        ₹{{ transaction.amount|floatformat:2 }}
+                                    </td>
+                                    <td>
+                                        {% if transaction.status == 'completed' %}
+                                            <span class="badge bg-success">Success</span>
+                                        {% elif transaction.status == 'pending' %}
+                                            <span class="badge bg-warning">Pending</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Failed</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">
+                                        <i class="bi bi-inbox fs-1 d-block text-muted mb-2"></i>
+                                        <p class="text-muted mb-0">No transactions yet</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Users -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-plus text-primary"></i>
+                        Recent Users
+                    </h5>
+                    <a href="{% url 'manage_users' %}" class="btn btn-sm btn-primary">
+                        View All <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Account No.</th>
+                                    <th>Name</th>
+                                    <th>Account Type</th>
+                                    <th>Balance</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in recent_users %}
+                                <tr>
+                                    <td>
+                                        <span class="small">{{ user.account_number|truncatechars:12 }}</span>
+                                    </td>
+                                    <td>{{ user.full_name|truncatechars:15 }}</td>
+                                    <td>{{ user.get_account_type_name }}</td>
+                                    <td class="fw-bold">₹{{ user.balance|floatformat:2 }}</td>
+                                    <td>
+                                        {% if user.is_frozen %}
+                                            <span class="badge bg-warning">Frozen</span>
+                                        {% elif user.is_active %}
+                                            <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">
+                                        <i class="bi bi-people fs-1 d-block text-muted mb-2"></i>
+                                        <p class="text-muted mb-0">No users yet</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Status -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0">
+                        <i class="bi bi-hdd-stack text-primary"></i>
+                        System Status
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-database fs-2 text-success"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-0">Database</h6>
+                                    <small class="text-success">Connected</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-envelope fs-2 text-success"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-0">Email Service</h6>
+                                    <small class="text-success">Active</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-shield-check fs-2 text-success"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-0">Security</h6>
+                                    <small class="text-success">All Systems Normal</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-people fs-2 text-success"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-0">Active Sessions</h6>
+                                    <small class="text-success">{{ active_users }} Users Online</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

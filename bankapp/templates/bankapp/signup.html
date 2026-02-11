@@ -1,0 +1,173 @@
+{% extends 'bankapp/base.html' %}
+{% load static %}
+
+{% block title %}Sign Up - NexusTrust Bank{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h3 class="mb-0 text-center">
+                        <i class="bi bi-person-plus"></i> Open Your Account
+                    </h3>
+                    <p class="text-muted text-center mb-0">Join India's fastest growing digital bank</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Personal Information -->
+                        <h5 class="fw-bold mb-3">Personal Information</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Full Name *</label>
+                                {{ form.full_name }}
+                                {% if form.full_name.errors %}
+                                    <div class="text-danger mt-1">{{ form.full_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email Address *</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger mt-1">{{ form.email.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Mobile Number *</label>
+                                {{ form.phone }}
+                                <small class="text-muted">10-digit Indian mobile number</small>
+                                {% if form.phone.errors %}
+                                    <div class="text-danger mt-1">{{ form.phone.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Date of Birth *</label>
+                                <input type="date" name="dob" class="form-control" required>
+                            </div>
+                        </div>
+                        
+                        <!-- KYC Information -->
+                        <h5 class="fw-bold mb-3">KYC Information</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Aadhaar Number (Optional)</label>
+                                {{ form.aadhaar }}
+                                <small class="text-muted">12-digit Aadhaar number</small>
+                                {% if form.aadhaar.errors %}
+                                    <div class="text-danger mt-1">{{ form.aadhaar.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">PAN Card (Optional)</label>
+                                {{ form.pan }}
+                                <small class="text-muted">e.g., ABCDE1234F</small>
+                                {% if form.pan.errors %}
+                                    <div class="text-danger mt-1">{{ form.pan.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Address Information -->
+                        <h5 class="fw-bold mb-3">Address Information</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-12">
+                                <label class="form-label">Address *</label>
+                                {{ form.address }}
+                                {% if form.address.errors %}
+                                    <div class="text-danger mt-1">{{ form.address.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">City *</label>
+                                {{ form.city }}
+                                {% if form.city.errors %}
+                                    <div class="text-danger mt-1">{{ form.city.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">State *</label>
+                                {{ form.state }}
+                                {% if form.state.errors %}
+                                    <div class="text-danger mt-1">{{ form.state.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Pincode *</label>
+                                {{ form.pincode }}
+                                <small class="text-muted">6-digit pincode</small>
+                                {% if form.pincode.errors %}
+                                    <div class="text-danger mt-1">{{ form.pincode.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Account Information -->
+                        <h5 class="fw-bold mb-3">Account Information</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Account Type *</label>
+                                {{ form.account_type }}
+                                {% if form.account_type.errors %}
+                                    <div class="text-danger mt-1">{{ form.account_type.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Initial Deposit (Optional)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₹</span>
+                                    <input type="number" name="initial_deposit" class="form-control" 
+                                           placeholder="Enter amount" min="0" step="0.01">
+                                </div>
+                                <small class="text-muted">Minimum ₹500 for savings account</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Security -->
+                        <h5 class="fw-bold mb-3">Security</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Password *</label>
+                                {{ form.password1 }}
+                                <small class="text-muted">Minimum 8 characters with mix of letters and numbers</small>
+                                {% if form.password1.errors %}
+                                    <div class="text-danger mt-1">{{ form.password1.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Confirm Password *</label>
+                                {{ form.password2 }}
+                                {% if form.password2.errors %}
+                                    <div class="text-danger mt-1">{{ form.password2.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Terms and Conditions -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="terms" required>
+                                <label class="form-check-label" for="terms">
+                                    I have read and agree to the <a href="{% url 'terms' %}" target="_blank">Terms and Conditions</a> and 
+                                    <a href="{% url 'privacy' %}" target="_blank">Privacy Policy</a>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-shield-check"></i> Create Account
+                            </button>
+                            <p class="text-center mt-3 mb-0">
+                                Already have an account? <a href="{% url 'login' %}">Login here</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

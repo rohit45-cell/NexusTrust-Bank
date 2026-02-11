@@ -1,0 +1,193 @@
+{% extends 'bankapp/base.html' %}
+{% load static %}
+
+{% block title %}Transaction History{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="bi bi-clock-history"></i>
+                        Transaction History
+                    </h4>
+                    <div>
+                        <a href="{% url 'download_report' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-download"></i> Download Report
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Filters -->
+                    <form method="get" class="row g-3 mb-4">
+                        <div class="col-md-3">
+                            <label class="form-label">From Date</label>
+                            <input type="date" name="date_from" class="form-control" value="{{ request.GET.date_from }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">To Date</label>
+                            <input type="date" name="date_to" class="form-control" value="{{ request.GET.date_to }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Transaction Type</label>
+                            <select name="type" class="form-select">
+                                <option value="">All</option>
+                                {% for value, label in transaction_types %}
+                                <option value="{{ value }}" {% if request.GET.type == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Search</label>
+                            <div class="input-group">
+                                <input type="text" name="search" class="form-control" 
+                                       placeholder="Search transactions..." value="{{ request.GET.search }}">
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <!-- Transactions Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Date & Time</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Balance After</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in transactions %}
+                                <tr>
+                                    <td>
+                                        <span class="text-muted small">{{ transaction.transaction_id }}</span>
+                                    </td>
+                                    <td>
+                                        {{ transaction.created_at|date:"d/m/Y" }}
+                                        <small class="text-muted d-block">{{ transaction.created_at|time:"H:i:s" }}</small>
+                                    </td>
+                                    <td>
+                                        {% if transaction.transaction_type == 'deposit' %}
+                                            <span class="badge bg-success">Deposit</span>
+                                        {% elif transaction.transaction_type == 'withdraw' %}
+                                            <span class="badge bg-danger">Withdrawal</span>
+                                        {% elif transaction.transaction_type == 'transfer' %}
+                                            {% if transaction.receiver %}
+                                                <span class="badge bg-primary">Transfer Out</span>
+                                            {% else %}
+                                                <span class="badge bg-info">Transfer In</span>
+                                            {% endif %}
+                                        {% elif transaction.transaction_type == 'rollback' %}
+                                            <span class="badge bg-warning">Rollback</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ transaction.get_transaction_type_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ transaction.description|truncatechars:50|default:"-" }}
+                                    </td>
+                                    <td class="{% if transaction.transaction_type == 'deposit' or transaction.transaction_type == 'transfer' and not transaction.receiver %}text-success{% else %}text-danger{% endif %} fw-bold">
+                                        {% if transaction.transaction_type == 'deposit' or transaction.transaction_type == 'transfer' and not transaction.receiver %}
+                                            +₹{{ transaction.amount|floatformat:2 }}
+                                        {% else %}
+                                            -₹{{ transaction.amount|floatformat:2 }}
+                                        {% endif %}
+                                    </td>
+                                    <td>₹{{ transaction.balance_after|floatformat:2 }}</td>
+                                    <td>
+                                        {% if transaction.status == 'completed' %}
+                                            <span class="badge bg-success">Success</span>
+                                        {% elif transaction.status == 'pending' %}
+                                            <span class="badge bg-warning">Pending</span>
+                                        {% elif transaction.status == 'failed' %}
+                                            <span class="badge bg-danger">Failed</span>
+                                        {% elif transaction.status == 'rolled_back' %}
+                                            <span class="badge bg-secondary">Rolled Back</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'transaction_detail' transaction.transaction_id %}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="8" class="text-center py-5">
+                                        <i class="bi bi-inbox fs-1 d-block mb-3 text-muted"></i>
+                                        <h5 class="text-muted">No transactions found</h5>
+                                        <p class="text-muted mb-3">Start your banking journey with a deposit</p>
+                                        <a href="{% url 'deposit' %}" class="btn btn-primary">
+                                            <i class="bi bi-arrow-down-circle"></i>
+                                            Make a Deposit
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    {% if transactions.has_other_pages %}
+                    <nav aria-label="Transaction pagination" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if transactions.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ transactions.previous_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                                    Previous
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">Previous</span>
+                            </li>
+                            {% endif %}
+                            
+                            {% for i in transactions.paginator.page_range %}
+                                {% if transactions.number == i %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ i }}</span>
+                                </li>
+                                {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ i }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                                        {{ i }}
+                                    </a>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if transactions.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ transactions.next_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                                    Next
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">Next</span>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

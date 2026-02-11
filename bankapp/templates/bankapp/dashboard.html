@@ -1,0 +1,366 @@
+{% extends 'bankapp/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Welcome Banner -->
+    <div class="gradient-banner">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h2 class="display-6 fw-bold">Welcome back, {{ user.full_name }}!</h2>
+                <p class="lead mb-0">Account Number: <strong>{{ user.account_number }}</strong></p>
+                <p class="mb-0">IFSC Code: <strong>{{ user.ifsc_code }}</strong></p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <span class="badge bg-light text-dark p-3">
+                    <i class="bi bi-shield-check"></i> {{ stats.account_status }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Available Balance</h6>
+                            <h3 class="mb-0 fw-bold">₹{{ stats.available_balance|floatformat:2 }}</h3>
+                            <small class="text-muted">Total: ₹{{ stats.balance|floatformat:2 }}</small>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 p-3 rounded">
+                            <i class="bi bi-wallet2 fs-1 text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Total Deposits</h6>
+                            <h3 class="mb-0 fw-bold text-success">₹{{ stats.total_deposits|floatformat:2 }}</h3>
+                        </div>
+                        <div class="bg-success bg-opacity-10 p-3 rounded">
+                            <i class="bi bi-arrow-down-circle fs-1 text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Total Withdrawals</h6>
+                            <h3 class="mb-0 fw-bold text-danger">₹{{ stats.total_withdrawals|floatformat:2 }}</h3>
+                        </div>
+                        <div class="bg-danger bg-opacity-10 p-3 rounded">
+                            <i class="bi bi-arrow-up-circle fs-1 text-danger"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">This Month</h6>
+                            <h3 class="mb-0 fw-bold">{{ stats.monthly_transactions }}</h3>
+                            <small class="text-muted">Transactions</small>
+                        </div>
+                        <div class="bg-info bg-opacity-10 p-3 rounded">
+                            <i class="bi bi-calendar-check fs-1 text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3 col-6">
+                            <a href="{% url 'deposit' %}" class="btn btn-outline-success w-100 py-3">
+                                <i class="bi bi-arrow-down-circle d-block fs-3 mb-2"></i>
+                                Deposit
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <a href="{% url 'withdraw' %}" class="btn btn-outline-danger w-100 py-3">
+                                <i class="bi bi-arrow-up-circle d-block fs-3 mb-2"></i>
+                                Withdraw
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <a href="{% url 'transfer' %}" class="btn btn-outline-primary w-100 py-3">
+                                <i class="bi bi-arrow-left-right d-block fs-3 mb-2"></i>
+                                Transfer
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <a href="{% url 'transaction_history' %}" class="btn btn-outline-info w-100 py-3">
+                                <i class="bi bi-clock-history d-block fs-3 mb-2"></i>
+                                History
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Balance History</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="balanceChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Transaction Types</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="transactionPieChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Monthly Transactions</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="monthlyChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Transactions</h5>
+                    <a href="{% url 'transaction_history' %}" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in recent_transactions %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'transaction_detail' transaction.transaction_id %}" class="text-decoration-none">
+                                            {{ transaction.transaction_id|truncatechars:10 }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {% if transaction.transaction_type == 'deposit' %}
+                                            <span class="badge bg-success">Deposit</span>
+                                        {% elif transaction.transaction_type == 'withdraw' %}
+                                            <span class="badge bg-danger">Withdraw</span>
+                                        {% elif transaction.transaction_type == 'transfer' %}
+                                            <span class="badge bg-primary">Transfer</span>
+                                        {% else %}
+                                            <span class="badge bg-info">{{ transaction.get_transaction_type_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="{% if transaction.transaction_type == 'deposit' %}text-success{% else %}text-danger{% endif %}">
+                                        ₹{{ transaction.amount|floatformat:2 }}
+                                    </td>
+                                    <td>{{ transaction.created_at|date:"d/m/Y" }}</td>
+                                    <td>
+                                        {% if transaction.status == 'completed' %}
+                                            <span class="badge bg-success">Success</span>
+                                        {% elif transaction.status == 'pending' %}
+                                            <span class="badge bg-warning">Pending</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ transaction.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">
+                                        <i class="bi bi-inbox fs-1 d-block mb-2 text-muted"></i>
+                                        <p class="text-muted mb-0">No transactions yet</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account Details -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Account Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Account Type</small>
+                            <strong>{{ user.account_type.name }}</strong>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Interest Rate</small>
+                            <strong>{{ user.account_type.interest_rate }}% p.a.</strong>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Minimum Balance</small>
+                            <strong>₹{{ user.account_type.minimum_balance|floatformat:2 }}</strong>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Overdraft Limit</small>
+                            <strong>₹{{ user.account_type.overdraft_limit|floatformat:2 }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Parse chart data
+    const chartData = {{ chart_data|safe }};
+    
+    // Balance History Chart
+    new Chart(document.getElementById('balanceChart'), {
+        type: 'line',
+        data: {
+            labels: chartData.balance_history.labels,
+            datasets: [{
+                label: 'Balance (₹)',
+                data: chartData.balance_history.data,
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102,126,234,0.1)',
+                borderWidth: 2,
+                pointRadius: 3,
+                pointBackgroundColor: '#667eea',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                }
+            }
+        }
+    });
+    
+    // Monthly Transactions Chart
+    new Chart(document.getElementById('monthlyChart'), {
+        type: 'bar',
+        data: {
+            labels: chartData.monthly_transactions.labels,
+            datasets: [{
+                label: 'Number of Transactions',
+                data: chartData.monthly_transactions.data,
+                backgroundColor: 'rgba(102,126,234,0.5)',
+                borderColor: '#667eea',
+                borderWidth: 1,
+                borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                }
+            }
+        }
+    });
+    
+    // Transaction Types Pie Chart
+    new Chart(document.getElementById('transactionPieChart'), {
+        type: 'pie',
+        data: {
+            labels: chartData.transaction_types.labels,
+            datasets: [{
+                data: chartData.transaction_types.data,
+                backgroundColor: [
+                    '#667eea',
+                    '#764ba2',
+                    '#48bb78',
+                    '#f56565',
+                    '#ed8936'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,201 @@
+{% extends 'bankapp/base.html' %}
+{% load static %}
+
+{% block title %}Terms and Conditions - NexusTrust Bank{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="gradient-banner">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 fw-bold mb-4">Terms and Conditions</h1>
+                <p class="lead mb-0">Please read our terms carefully</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container my-5">
+    <div class="row">
+        <div class="col-lg-3 mb-4">
+            <!-- Sidebar -->
+            <div class="card sticky-top" style="top: 100px;">
+                <div class="card-body">
+                    <nav class="nav flex-column nav-pills">
+                        <a class="nav-link active" href="#introduction">1. Introduction</a>
+                        <a class="nav-link" href="#account-terms">2. Account Terms</a>
+                        <a class="nav-link" href="#transactions">3. Transactions</a>
+                        <a class="nav-link" href="#fees">4. Fees and Charges</a>
+                        <a class="nav-link" href="#privacy">5. Privacy Policy</a>
+                        <a class="nav-link" href="#security">6. Security</a>
+                        <a class="nav-link" href="#limitations">7. Limitations of Liability</a>
+                        <a class="nav-link" href="#termination">8. Account Termination</a>
+                        <a class="nav-link" href="#governing-law">9. Governing Law</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-9">
+            <div class="card">
+                <div class="card-body p-5">
+                    <div class="mb-5" id="introduction">
+                        <h3 class="fw-bold mb-4">1. Introduction</h3>
+                        <p>Welcome to NexusTrust Bank. By opening an account and using our services, you agree to be bound by these Terms and Conditions. Please read them carefully.</p>
+                        <p>These terms constitute a legally binding agreement between you ("Customer") and NexusTrust Bank regarding your use of our banking services, website, and mobile applications.</p>
+                        <p class="text-muted">Last Updated: January 1, 2024</p>
+                    </div>
+                    
+                    <div class="mb-5" id="account-terms">
+                        <h3 class="fw-bold mb-4">2. Account Terms</h3>
+                        <h5 class="mt-4">2.1 Eligibility</h5>
+                        <ul>
+                            <li>You must be at least 18 years old to open an account</li>
+                            <li>You must be a resident of India</li>
+                            <li>You must provide valid KYC documents (Aadhaar, PAN)</li>
+                            <li>Each individual can hold only one savings account</li>
+                        </ul>
+                        
+                        <h5 class="mt-4">2.2 Account Opening</h5>
+                        <ul>
+                            <li>Accounts are opened subject to verification of documents</li>
+                            <li>NexusTrust Bank reserves the right to reject any application</li>
+                            <li>You must provide accurate and complete information</li>
+                            <li>Any false information may lead to account closure</li>
+                        </ul>
+                        
+                        <h5 class="mt-4">2.3 Minimum Balance</h5>
+                        <ul>
+                            <li>Savings Account: ₹1,000 minimum monthly average balance</li>
+                            <li>Current Account: ₹5,000 minimum monthly average balance</li>
+                            <li>Non-maintenance charges apply as per schedule</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-5" id="transactions">
+                        <h3 class="fw-bold mb-4">3. Transactions</h3>
+                        <h5 class="mt-4">3.1 Transaction Limits</h5>
+                        <ul>
+                            <li>Daily withdrawal limit: ₹50,000 for savings account</li>
+                            <li>Daily transfer limit: ₹2,00,000 for savings account</li>
+                            <li>Current account limits based on customer profile</li>
+                        </ul>
+                        
+                        <h5 class="mt-4">3.2 Transaction Processing</h5>
+                        <ul>
+                            <li>Transactions are processed in Indian Rupees (₹)</li>
+                            <li>All transactions are subject to verification</li>
+                            <li>NexusTrust Bank reserves right to hold suspicious transactions</li>
+                            <li>Transaction timings apply for NEFT/RTGS</li>
+                        </ul>
+                        
+                        <h5 class="mt-4">3.3 Failed Transactions</h5>
+                        <ul>
+                            <li>Insufficient balance may lead to transaction failure</li>
+                            <li>Failed transactions are not charged</li>
+                            <li>Contact support for transaction disputes</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-5" id="fees">
+                        <h3 class="fw-bold mb-4">4. Fees and Charges</h3>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Service</th>
+                                        <th>Charge</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Monthly Average Balance Non-maintenance</td>
+                                        <td>₹100 + GST</td>
+                                    </tr>
+                                    <tr>
+                                        <td>ATM Withdrawal (beyond 5/month)</td>
+                                        <td>₹20 + GST per transaction</td>
+                                    </tr>
+                                    <tr>
+                                        <td>NEFT/RTGS/IMPS</td>
+                                        <td>Free for digital transactions</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Cheque Book</td>
+                                        <td>₹100 per book (25 leaves)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Duplicate Statement</td>
+                                        <td>₹50 per statement</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Card Replacement</td>
+                                        <td>₹100 + GST</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-5" id="privacy">
+                        <h3 class="fw-bold mb-4">5. Privacy Policy</h3>
+                        <p>We are committed to protecting your privacy. Our privacy practices include:</p>
+                        <ul>
+                            <li>We collect only necessary information for banking services</li>
+                            <li>Your data is encrypted and securely stored</li>
+                            <li>We never share your information without consent</li>
+                            <li>You can request your data at any time</li>
+                            <li>We comply with all RBI data protection guidelines</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-5" id="security">
+                        <h3 class="fw-bold mb-4">6. Security</h3>
+                        <ul>
+                            <li>Never share your login credentials or OTP</li>
+                            <li>Use strong passwords and change regularly</li>
+                            <li>Enable two-factor authentication</li>
+                            <li>Report unauthorized transactions immediately</li>
+                            <li>Zero liability for reported fraud cases</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-5" id="limitations">
+                        <h3 class="fw-bold mb-4">7. Limitations of Liability</h3>
+                        <p>NexusTrust Bank shall not be liable for:</p>
+                        <ul>
+                            <li>Technical failures beyond our control</li>
+                            <li>Third-party service disruptions</li>
+                            <li>Customer negligence in securing credentials</li>
+                            <li>Force majeure events</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-5" id="termination">
+                        <h3 class="fw-bold mb-4">8. Account Termination</h3>
+                        <p>Your account may be terminated for:</p>
+                        <ul>
+                            <li>Violation of these terms</li>
+                            <li>Illegal or fraudulent activities</li>
+                            <li>Dormant for more than 2 years</li>
+                            <li>At your request with zero balance</li>
+                            <li>Regulatory requirements</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-5" id="governing-law">
+                        <h3 class="fw-bold mb-4">9. Governing Law</h3>
+                        <p>These terms are governed by the laws of India. Any disputes shall be subject to the exclusive jurisdiction of courts in Mumbai.</p>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Note:</strong> NexusTrust Bank reserves the right to modify these terms at any time. Changes will be communicated via email and SMS.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

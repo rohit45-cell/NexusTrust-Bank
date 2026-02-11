@@ -1,0 +1,67 @@
+{% extends 'bankapp/base.html' %}
+{% load static %}
+
+{% block title %}Edit Transaction - Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-pencil-square"></i>
+                        Edit Transaction
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-info mb-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block">Transaction ID</small>
+                                <strong>{{ transaction.transaction_id }}</strong>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted d-block">Date</small>
+                                <strong>{{ transaction.created_at|date:"d M Y H:i:s" }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Description</label>
+                            <textarea name="description" class="form-control" rows="3">{{ transaction.description }}</textarea>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Status</label>
+                            <select name="status" class="form-select">
+                                <option value="pending" {% if transaction.status == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="completed" {% if transaction.status == 'completed' %}selected{% endif %}>Completed</option>
+                                <option value="failed" {% if transaction.status == 'failed' %}selected{% endif %}>Failed</option>
+                            </select>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Note:</strong> Changing transaction status does not affect account balance. Use Rollback to reverse transactions.
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-save"></i> Save Changes
+                            </button>
+                            <a href="{% url 'manage_transactions' %}" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

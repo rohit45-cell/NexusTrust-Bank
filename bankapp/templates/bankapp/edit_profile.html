@@ -1,0 +1,150 @@
+{% extends 'bankapp/base.html' %}
+{% load static %}
+
+{% block title %}Edit Profile - NexusTrust Bank{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-pencil-square"></i>
+                        Edit Profile
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row g-3">
+                            <!-- Profile Picture -->
+                            <div class="col-12 text-center mb-4">
+                                <div class="position-relative d-inline-block">
+                                    {% if user.profile_picture %}
+                                        <img src="{{ user.profile_picture.url }}" 
+                                             class="rounded-circle" width="120" height="120" 
+                                             style="object-fit: cover;">
+                                    {% else %}
+                                        <div class="bg-primary bg-opacity-10 rounded-circle p-4 d-inline-block">
+                                            <i class="bi bi-person-circle fs-1 text-primary"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div class="mt-2">
+                                        <label for="{{ form.profile_picture.id_for_label }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-camera"></i> Change Photo
+                                        </label>
+                                        {{ form.profile_picture }}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Personal Information -->
+                            <div class="col-12">
+                                <h5 class="fw-bold mb-3">Personal Information</h5>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Full Name</label>
+                                {{ form.full_name }}
+                                {% if form.full_name.errors %}
+                                    <div class="text-danger">{{ form.full_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone Number</label>
+                                {{ form.phone }}
+                                {% if form.phone.errors %}
+                                    <div class="text-danger">{{ form.phone.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Address Information -->
+                            <div class="col-12">
+                                <h5 class="fw-bold mb-3 mt-2">Address Information</h5>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Address</label>
+                                {{ form.address }}
+                                {% if form.address.errors %}
+                                    <div class="text-danger">{{ form.address.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">City</label>
+                                {{ form.city }}
+                                {% if form.city.errors %}
+                                    <div class="text-danger">{{ form.city.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">State</label>
+                                {{ form.state }}
+                                {% if form.state.errors %}
+                                    <div class="text-danger">{{ form.state.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Pincode</label>
+                                {{ form.pincode }}
+                                {% if form.pincode.errors %}
+                                    <div class="text-danger">{{ form.pincode.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Account Information (Read Only) -->
+                            <div class="col-12">
+                                <h5 class="fw-bold mb-3 mt-2">Account Information</h5>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Account Number</label>
+                                <input type="text" class="form-control" value="{{ user.account_number }}" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">IFSC Code</label>
+                                <input type="text" class="form-control" value="{{ user.ifsc_code }}" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Account Type</label>
+                                <input type="text" class="form-control" value="{{ user.get_account_type_name }}" readonly>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle"></i> Save Changes
+                            </button>
+                            <a href="{% url 'profile' %}" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Make file input visible
+document.getElementById('{{ form.profile_picture.id_for_label }}').style.display = 'none';
+
+// Trigger file input when label is clicked
+document.querySelector('label[for="{{ form.profile_picture.id_for_label }}"]').addEventListener('click', function(e) {
+    document.getElementById('{{ form.profile_picture.id_for_label }}').click();
+});
+
+// Show file name when selected
+document.getElementById('{{ form.profile_picture.id_for_label }}').addEventListener('change', function(e) {
+    if (this.files && this.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            document.querySelector('img, .bg-primary').src = e.target.result;
+        }
+        reader.readAsDataURL(this.files[0]);
+    }
+});
+</script>
+{% endblock %}
