@@ -4,9 +4,9 @@
 
 # Core Django
 Django==4.2.0
-gunicorn==20.1.0
-setuptools==65.5.0
-wheel==0.40.0
+gunicorn>=21.2.0
+setuptools>=68.0.0
+wheel>=0.41.0
 
 # Database
 psycopg2-binary==2.9.6
@@ -18,9 +18,8 @@ Pillow==10.0.0
 # PDF Generation
 reportlab==4.0.4
 
-# Date/Time
+# Date / Time
 python-dateutil==2.8.2
-pytz==2023.3
 
 # Static Files
 whitenoise==6.5.0
