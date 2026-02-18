@@ -4,16 +4,25 @@ Django settings for nexustrustbank project.
 
 import os
 from pathlib import Path
+import dj_database_url
 
+# ======================================
+# BASE
+# ======================================
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-nexustrust-bank-secret-key-2024'
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY",
+    "django-insecure-nexustrust-bank-secret-key-2024"
+)
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
-# Application definition
+# ======================================
+# APPLICATIONS
+# ======================================
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -21,26 +30,36 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'bankapp',
 ]
 
+# ======================================
+# MIDDLEWARE
+# ======================================
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
     'bankapp.middleware.SessionTimeoutMiddleware',
 ]
 
 ROOT_URLCONF = 'nexustrustbank.urls'
 
+# ======================================
+# TEMPLATES
+# ======================================
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -55,15 +74,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'nexustrustbank.wsgi.application'
 
-# Database
+# ======================================
+# DATABASE
+# ======================================
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    "default": dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+        ssl_require=False
+    )
 }
 
-# Password validation
+# ======================================
+# PASSWORD VALIDATION
+# ======================================
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -79,59 +103,73 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
+# ======================================
+# INTERNATIONALIZATION
+# ======================================
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
 USE_TZ = True
 
-# ==============================
-# STATIC FILES (FIXED HERE)
-# ==============================
-
+# ======================================
+# STATIC FILES
+# ======================================
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'bankapp/static'),
+    BASE_DIR / 'bankapp' / 'static',
 ]
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# ==============================
-# MEDIA FILES (FIXED HERE)
-# ==============================
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
+# ======================================
+# MEDIA FILES
+# ======================================
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'bankapp/media')
+MEDIA_ROOT = BASE_DIR / 'bankapp' / 'media'
 
+# ======================================
+# DEFAULTS
+# ======================================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ==============================
+# ======================================
 # CUSTOM USER MODEL
-# ==============================
+# ======================================
+AUTH_USER_MODEL = 'bankapp.User'
 
-AUTH_USER_MODEL = 'bankapp.User'   # Make sure your model name is exactly "User"
-
-# Login URLs
+# ======================================
+# AUTH SETTINGS
+# ======================================
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'home'
 
-# Session Settings
+# ======================================
+# SESSION SETTINGS
+# ======================================
 SESSION_COOKIE_AGE = 900
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
 
-# Email Configuration
+# ======================================
+# EMAIL (DEV SAFE)
+# ======================================
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'noreply@nexustrustbank.com'
 
-# Security Settings
+# ======================================
+# SECURITY (RELAXED FOR HOST = *)
+# ======================================
 CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_SECURE = False
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 
-# Indian Rupee Symbol
+# ======================================
+# APP CONSTANTS
+# ======================================
 CURRENCY = '₹'
