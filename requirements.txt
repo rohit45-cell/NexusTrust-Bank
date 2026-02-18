@@ -1,31 +1,16 @@
-# ============================================
-# NEXUSTRUST BANK - COMPLETE REQUIREMENTS
-# ============================================
-
-# Core Django
 Django==4.2.0
+
 gunicorn>=21.2.0
 setuptools>=68.0.0
 wheel>=0.41.0
 
-# Database
 psycopg2-binary==2.9.6
 dj-database-url==1.3.0
 
-# Image Processing
-Pillow==10.0.0
-
-# PDF Generation
+Pillow==10.3.0
 reportlab==4.0.4
 
-# Date / Time
 python-dateutil==2.8.2
-
-# Static Files
 whitenoise==6.5.0
-
-# Environment Variables
 python-decouple==3.8
-
-# Security
 bcrypt==4.0.1
