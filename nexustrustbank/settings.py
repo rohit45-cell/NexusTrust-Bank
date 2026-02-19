@@ -16,9 +16,36 @@ SECRET_KEY = os.environ.get(
     "django-insecure-nexustrust-bank-secret-key-2024"
 )
 
-DEBUG = True
+DEBUG = True  # Set to False in production
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*"]  # For development - restrict in production
+
+# ======================================
+# CSRF SETTINGS - FIX FOR CSRF ERROR
+# ======================================
+CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+    'https://*.onrender.com',  # For Render deployment
+    'http://*.onrender.com',
+]
+
+# CSRF Cookie Settings
+CSRF_COOKIE_SECURE = False  # Set to True only with HTTPS
+CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript to access CSRF token
+CSRF_COOKIE_SAMESITE = 'Lax'  # Helps with cross-site requests
+CSRF_USE_SESSIONS = False  # Store CSRF token in cookie (not session)
+CSRF_COOKIE_NAME = 'csrftoken'
+CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
+
+# ======================================
+# SESSION SETTINGS
+# ======================================
+SESSION_COOKIE_AGE = 900  # 15 minutes
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_SECURE = False  # Set to True with HTTPS
+SESSION_COOKIE_SAMESITE = 'Lax'
 
 # ======================================
 # APPLICATIONS
@@ -30,7 +57,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'bankapp',
 ]
 
@@ -40,14 +66,12 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
     'bankapp.middleware.SessionTimeoutMiddleware',
 ]
 
@@ -115,13 +139,8 @@ USE_TZ = True
 # STATIC FILES
 # ======================================
 STATIC_URL = '/static/'
-
-STATICFILES_DIRS = [
-    BASE_DIR / 'bankapp' / 'static',
-]
-
+STATICFILES_DIRS = [BASE_DIR / 'bankapp' / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # ======================================
@@ -148,23 +167,14 @@ LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'home'
 
 # ======================================
-# SESSION SETTINGS
-# ======================================
-SESSION_COOKIE_AGE = 900
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-SESSION_SAVE_EVERY_REQUEST = True
-
-# ======================================
 # EMAIL (DEV SAFE)
 # ======================================
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'noreply@nexustrustbank.com'
 
 # ======================================
-# SECURITY (RELAXED FOR HOST = *)
+# SECURITY SETTINGS
 # ======================================
-CSRF_COOKIE_SECURE = False
-SESSION_COOKIE_SECURE = False
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
