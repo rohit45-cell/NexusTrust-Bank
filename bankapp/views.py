@@ -27,13 +27,22 @@ from .utils import (
 # ============ PUBLIC VIEWS ============
 
 def home(request):
-    """Home page view"""
+    try:
+        total_users = User.objects.filter(is_active=True).count()
+        total_transactions = Transaction.objects.count()
+        total_account_types = AccountType.objects.filter(is_active=True).count()
+    except Exception:
+        total_users = 0
+        total_transactions = 0
+        total_account_types = 0
+
     context = {
-        'total_users': User.objects.filter(is_active=True).count(),
-        'total_transactions': Transaction.objects.count(),
-        'total_account_types': AccountType.objects.filter(is_active=True).count(),
+        'total_users': total_users,
+        'total_transactions': total_transactions,
+        'total_account_types': total_account_types,
     }
     return render(request, 'bankapp/home.html', context)
+
 
 def about(request):
     """About page"""
