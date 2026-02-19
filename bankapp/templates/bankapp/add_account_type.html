@@ -1,86 +1,410 @@
 {% extends 'bankapp/base.html' %}
 {% load static %}
 
-{% block title %}Add Account Type - Admin{% endblock %}
+{% block title %}Add Account Type - NexusTrust Bank{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .form-card {
+        border: none;
+        border-radius: 30px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+    
+    .form-header {
+        background: linear-gradient(145deg, #0a558c 0%, #1e6f9f 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+    }
+    
+    .form-header i {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        background: rgba(255,255,255,0.2);
+        padding: 20px;
+        border-radius: 50%;
+    }
+    
+    .form-body {
+        padding: 40px;
+        background: white;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+    }
+    
+    .form-control, .form-select {
+        border: 2px solid #e2e8f0;
+        border-radius: 15px;
+        padding: 12px 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #0a558c;
+        box-shadow: 0 0 0 4px rgba(10,85,140,0.1);
+    }
+    
+    .input-group-text {
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 15px 0 0 15px;
+        font-weight: 600;
+        color: #0a558c;
+    }
+    
+    .form-text {
+        color: #64748b;
+        font-size: 0.85rem;
+        margin-top: 5px;
+    }
+    
+    .feature-card {
+        background: #f8fafc;
+        border-radius: 15px;
+        padding: 15px;
+        margin-top: 20px;
+        border-left: 4px solid #0a558c;
+    }
+    
+    .feature-card i {
+        color: #0a558c;
+        font-size: 1.2rem;
+        margin-right: 10px;
+    }
+    
+    .btn-submit {
+        background: linear-gradient(145deg, #0a558c, #1e6f9f);
+        color: white;
+        border: none;
+        border-radius: 15px;
+        padding: 15px 30px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(10,85,140,0.3);
+    }
+    
+    .btn-submit i {
+        margin-right: 10px;
+    }
+    
+    .btn-cancel {
+        background: white;
+        color: #64748b;
+        border: 2px solid #e2e8f0;
+        border-radius: 15px;
+        padding: 15px 30px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+    .btn-cancel:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+    }
+    
+    .info-alert {
+        background: #eff6ff;
+        border: none;
+        border-left: 5px solid #0a558c;
+        border-radius: 15px;
+        padding: 20px;
+        margin-top: 30px;
+    }
+    
+    .info-alert i {
+        color: #0a558c;
+        font-size: 1.5rem;
+        margin-right: 15px;
+    }
+    
+    @media (max-width: 768px) {
+        .form-body {
+            padding: 20px;
+        }
+        
+        .form-header {
+            padding: 20px;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-white">
-                    <h4 class="mb-0">
-                        <i class="bi bi-plus-circle"></i>
-                        Add New Account Type
-                    </h4>
-                </div>
-                <div class="card-body p-4">
-                    <form method="post">
-                        {% csrf_token %}
+<div class="container py-5">
+    <div class="form-container">
+        <!-- Form Card -->
+        <div class="form-card">
+            <div class="form-header">
+                <i class="bi bi-plus-circle"></i>
+                <h2 class="fw-bold mb-2">Create New Account Type</h2>
+                <p class="mb-0 opacity-90">Define a new banking product for your customers</p>
+            </div>
+            
+            <div class="form-body">
+                <form method="post" id="accountTypeForm">
+                    {% csrf_token %}
+                    
+                    <!-- Basic Information -->
+                    <h5 class="fw-bold mb-4">
+                        <i class="bi bi-info-circle text-primary me-2"></i>
+                        Basic Information
+                    </h5>
+                    
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                <i class="bi bi-tag text-primary me-1"></i>
+                                Account Name
+                            </label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="text-danger mt-2">
+                                    <i class="bi bi-exclamation-circle"></i>
+                                    {{ form.name.errors }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">e.g., Premium Savings, Business Current, Gold FD</div>
+                        </div>
                         
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                <i class="bi bi-grid text-primary me-1"></i>
+                                Category
+                            </label>
+                            {{ form.category }}
+                            {% if form.category.errors %}
+                                <div class="text-danger mt-2">
+                                    <i class="bi bi-exclamation-circle"></i>
+                                    {{ form.category.errors }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Select the type of account</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Financial Parameters -->
+                    <h5 class="fw-bold mb-4 mt-5">
+                        <i class="bi bi-calculator text-primary me-2"></i>
+                        Financial Parameters
+                    </h5>
+                    
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                <i class="bi bi-currency-rupee text-primary me-1"></i>
+                                Minimum Balance
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                {{ form.minimum_balance }}
+                            </div>
+                            {% if form.minimum_balance.errors %}
+                                <div class="text-danger mt-2">
+                                    <i class="bi bi-exclamation-circle"></i>
+                                    {{ form.minimum_balance.errors }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Minimum balance required to maintain account</div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                <i class="bi bi-percent text-primary me-1"></i>
+                                Interest Rate (% p.a.)
+                            </label>
+                            <div class="input-group">
+                                {{ form.interest_rate }}
+                                <span class="input-group-text">%</span>
+                            </div>
+                            {% if form.interest_rate.errors %}
+                                <div class="text-danger mt-2">
+                                    <i class="bi bi-exclamation-circle"></i>
+                                    {{ form.interest_rate.errors }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Annual interest rate (e.g., 3.5 for 3.5%)</div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                <i class="bi bi-shield text-primary me-1"></i>
+                                Overdraft Limit
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                {{ form.overdraft_limit }}
+                            </div>
+                            {% if form.overdraft_limit.errors %}
+                                <div class="text-danger mt-2">
+                                    <i class="bi bi-exclamation-circle"></i>
+                                    {{ form.overdraft_limit.errors }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Maximum overdraft allowed (for current accounts)</div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                <i class="bi bi-toggle-on text-primary me-1"></i>
+                                Status
+                            </label>
+                            <div class="form-check form-switch mt-2">
+                                {{ form.is_active }}
+                                <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                    Active (Available for new accounts)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Feature Preview -->
+                    <div class="feature-card">
+                        <h6 class="fw-bold mb-3">
+                            <i class="bi bi-star-fill text-warning"></i>
+                            Account Features Preview
+                        </h6>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold">Account Name</label>
-                                {{ form.name }}
-                                <small class="text-muted">e.g., Premium Savings, Business Current</small>
+                                <p class="mb-2">
+                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                    <span id="previewMinBalance">₹1,000</span> Minimum Balance
+                                </p>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold">Category</label>
-                                {{ form.category }}
+                                <p class="mb-2">
+                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                    <span id="previewInterest">3.5%</span> Interest Rate
+                                </p>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold">Minimum Balance (₹)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">₹</span>
-                                    {{ form.minimum_balance }}
-                                </div>
+                                <p class="mb-2">
+                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                    <span id="previewOverdraft">₹0</span> Overdraft Limit
+                                </p>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold">Interest Rate (%)</label>
-                                <div class="input-group">
-                                    {{ form.interest_rate }}
-                                    <span class="input-group-text">% p.a.</span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Overdraft Limit (₹)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">₹</span>
-                                    {{ form.overdraft_limit }}
-                                </div>
-                                <small class="text-muted">For current accounts only</small>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mt-4">
-                                    <div class="form-check">
-                                        {{ form.is_active }}
-                                        <label class="form-check-label fw-semibold">
-                                            Active (Available for new accounts)
-                                        </label>
-                                    </div>
-                                </div>
+                                <p class="mb-2">
+                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                    <span id="previewStatus">Active</span> Status
+                                </p>
                             </div>
                         </div>
-                        
-                        <hr class="my-4">
-                        
-                        <div class="alert alert-info">
-                            <i class="bi bi-info-circle"></i>
-                            <strong>Note:</strong> Account types can be edited later, but cannot be deleted if users are assigned.
+                    </div>
+                    
+                    <!-- Important Information -->
+                    <div class="info-alert d-flex align-items-start">
+                        <i class="bi bi-info-circle-fill flex-shrink-0 mt-1"></i>
+                        <div>
+                            <strong class="d-block mb-2">Important Notes:</strong>
+                            <ul class="mb-0 small">
+                                <li>Account types can be edited after creation</li>
+                                <li>Deletion is only allowed if no users are assigned</li>
+                                <li>Changes to minimum balance affect existing users</li>
+                                <li>Interest rate changes will apply from next month</li>
+                            </ul>
                         </div>
-                        
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="bi bi-check-circle"></i> Create Account Type
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="row g-3 mt-4">
+                        <div class="col-md-6">
+                            <button type="submit" class="btn-submit">
+                                <i class="bi bi-check-circle"></i>
+                                Create Account Type
                             </button>
-                            <a href="{% url 'manage_account_types' %}" class="btn btn-outline-secondary">
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'manage_account_types' %}" class="btn-cancel d-block text-center">
+                                <i class="bi bi-x-circle"></i>
                                 Cancel
                             </a>
                         </div>
-                    </form>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Help Card -->
+        <div class="card border-0 mt-4 bg-light">
+            <div class="card-body p-4">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <i class="bi bi-question-circle-fill text-primary fs-1"></i>
+                    </div>
+                    <div class="col">
+                        <h6 class="fw-bold mb-1">Need Help?</h6>
+                        <p class="text-muted small mb-0">Contact your system administrator or refer to the documentation for guidance on account type configuration.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Live Preview Updates
+    document.addEventListener('DOMContentLoaded', function() {
+        const minBalance = document.getElementById('{{ form.minimum_balance.id_for_label }}');
+        const interestRate = document.getElementById('{{ form.interest_rate.id_for_label }}');
+        const overdraft = document.getElementById('{{ form.overdraft_limit.id_for_label }}');
+        const isActive = document.getElementById('{{ form.is_active.id_for_label }}');
+        
+        const previewMinBalance = document.getElementById('previewMinBalance');
+        const previewInterest = document.getElementById('previewInterest');
+        const previewOverdraft = document.getElementById('previewOverdraft');
+        const previewStatus = document.getElementById('previewStatus');
+        
+        function updatePreview() {
+            previewMinBalance.textContent = '₹' + (parseFloat(minBalance.value) || 0).toLocaleString();
+            previewInterest.textContent = (parseFloat(interestRate.value) || 0) + '%';
+            previewOverdraft.textContent = '₹' + (parseFloat(overdraft.value) || 0).toLocaleString();
+            previewStatus.textContent = isActive.checked ? 'Active' : 'Inactive';
+        }
+        
+        minBalance.addEventListener('input', updatePreview);
+        interestRate.addEventListener('input', updatePreview);
+        overdraft.addEventListener('input', updatePreview);
+        isActive.addEventListener('change', updatePreview);
+        
+        // Initial update
+        updatePreview();
+    });
+    
+    // Form validation
+    document.getElementById('accountTypeForm').addEventListener('submit', function(e) {
+        const minBalance = parseFloat(document.getElementById('{{ form.minimum_balance.id_for_label }}').value);
+        const interestRate = parseFloat(document.getElementById('{{ form.interest_rate.id_for_label }}').value);
+        
+        if (minBalance < 0) {
+            e.preventDefault();
+            alert('Minimum balance cannot be negative');
+            return false;
+        }
+        
+        if (interestRate < 0 || interestRate > 20) {
+            e.preventDefault();
+            alert('Interest rate should be between 0% and 20%');
+            return false;
+        }
+    });
+</script>
 {% endblock %}
