@@ -1,4 +1,5 @@
 from django.db import migrations
+from django.contrib.auth.hashers import make_password
 
 def create_admin(apps, schema_editor):
     User = apps.get_model("bankapp", "User")
@@ -8,7 +9,7 @@ def create_admin(apps, schema_editor):
     if User.objects.filter(email=email).exists():
         return
 
-    admin = User.objects.create(
+    User.objects.create(
         email=email,
         full_name="System Admin",
         phone="9876543210",
@@ -16,13 +17,11 @@ def create_admin(apps, schema_editor):
         city="Bangalore",
         state="Karnataka",
         pincode="560001",
+        password=make_password("admin@123"),
         is_staff=True,
         is_superuser=True,
         is_active=True,
     )
-    admin.set_password("admin@123")
-    admin.save()
-
 
 class Migration(migrations.Migration):
 
