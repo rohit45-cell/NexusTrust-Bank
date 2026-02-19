@@ -6,6 +6,8 @@ from decimal import Decimal
 import re
 
 class SignUpForm(forms.ModelForm):
+    """User registration form with Indian KYC validation"""
+    
     password1 = forms.CharField(
         label='Password',
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter password'}),
@@ -33,45 +35,53 @@ class SignUpForm(forms.ModelForm):
         }
     
     def clean_password2(self):
+        """Validate that passwords match"""
         password1 = self.cleaned_data.get('password1')
         password2 = self.cleaned_data.get('password2')
+        
         if password1 and password2 and password1 != password2:
             raise ValidationError('Passwords do not match')
-        if len(password1) < 8:
+        
+        if password1 and len(password1) < 8:
             raise ValidationError('Password must be at least 8 characters long')
+        
         return password2
     
     def clean_phone(self):
+        """Validate Indian phone number (10 digits, starts with 6-9)"""
         phone = self.cleaned_data.get('phone')
         if phone and not re.match(r'^[6-9]\d{9}$', phone):
-            raise ValidationError('Enter a valid Indian mobile number')
+            raise ValidationError('Enter a valid Indian mobile number (10 digits starting with 6-9)')
         return phone
     
     def clean_pincode(self):
+        """Validate 6-digit pincode"""
         pincode = self.cleaned_data.get('pincode')
         if pincode and not re.match(r'^\d{6}$', pincode):
             raise ValidationError('Enter a valid 6-digit pincode')
         return pincode
     
     def clean_aadhaar(self):
+        """Validate 12-digit Aadhaar number (optional)"""
         aadhaar = self.cleaned_data.get('aadhaar')
         if aadhaar and not re.match(r'^\d{12}$', aadhaar):
             raise ValidationError('Enter a valid 12-digit Aadhaar number')
         return aadhaar
     
     def clean_pan(self):
+        """Validate PAN card format (optional)"""
         pan = self.cleaned_data.get('pan')
         if pan and not re.match(r'^[A-Z]{5}[0-9]{4}[A-Z]{1}$', pan):
-            raise ValidationError('Enter a valid PAN card number')
+            raise ValidationError('Enter a valid PAN card number (e.g., ABCDE1234F)')
         return pan
     
     def save(self, commit=True):
+        """Create user with hashed password"""
         user = super().save(commit=False)
         user.set_password(self.cleaned_data['password1'])
         
-        # Ensure account_type is set
+        # Ensure account_type is set (fallback to Savings if none selected)
         if not user.account_type:
-            # Set default account type (Savings)
             from .models import AccountType
             default_account, _ = AccountType.objects.get_or_create(
                 name='Savings Account',
@@ -88,7 +98,10 @@ class SignUpForm(forms.ModelForm):
             user.save()
         return user
 
+
 class LoginForm(forms.Form):
+    """User login form"""
+    
     email = forms.EmailField(
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Enter email'})
     )
@@ -96,7 +109,10 @@ class LoginForm(forms.Form):
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter password'})
     )
 
+
 class UserProfileForm(forms.ModelForm):
+    """User profile edit form"""
+    
     class Meta:
         model = User
         fields = ['full_name', 'phone', 'address', 'city', 'state', 'pincode', 'profile_picture']
@@ -111,12 +127,16 @@ class UserProfileForm(forms.ModelForm):
         }
     
     def clean_phone(self):
+        """Validate Indian phone number"""
         phone = self.cleaned_data.get('phone')
         if phone and not re.match(r'^[6-9]\d{9}$', phone):
             raise ValidationError('Enter a valid Indian mobile number')
         return phone
 
+
 class DepositForm(forms.Form):
+    """Deposit money form"""
+    
     amount = forms.DecimalField(
         min_value=1,
         max_digits=12,
@@ -127,8 +147,11 @@ class DepositForm(forms.Form):
         required=False,
         widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Add note (optional)', 'rows': 2})
     )
+
 
 class WithdrawForm(forms.Form):
+    """Withdraw money form"""
+    
     amount = forms.DecimalField(
         min_value=1,
         max_digits=12,
@@ -140,7 +163,10 @@ class WithdrawForm(forms.Form):
         widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Add note (optional)', 'rows': 2})
     )
 
+
 class TransferForm(forms.Form):
+    """Transfer money form"""
+    
     receiver_account = forms.CharField(
         max_length=16,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter receiver account number'})
@@ -157,6 +183,7 @@ class TransferForm(forms.Form):
     )
     
     def clean_receiver_account(self):
+        """Validate receiver account exists and is active"""
         account = self.cleaned_data.get('receiver_account')
         try:
             receiver = User.objects.get(account_number=account, is_active=True, is_frozen=False)
@@ -164,7 +191,10 @@ class TransferForm(forms.Form):
             raise ValidationError('Invalid account number or account not active')
         return account
 
+
 class ContactForm(forms.ModelForm):
+    """Contact us form"""
+    
     class Meta:
         model = Contact
         fields = ['name', 'email', 'phone', 'subject', 'message']
@@ -177,23 +207,30 @@ class ContactForm(forms.ModelForm):
         }
     
     def clean_phone(self):
+        """Validate Indian phone number"""
         phone = self.cleaned_data.get('phone')
         if phone and not re.match(r'^[6-9]\d{9}$', phone):
             raise ValidationError('Enter a valid Indian mobile number')
         return phone
 
+
 class CustomPasswordChangeForm(PasswordChangeForm):
+    """Custom password change form with Bootstrap styling"""
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields:
             self.fields[field].widget.attrs.update({'class': 'form-control'})
 
+
 class AccountTypeForm(forms.ModelForm):
+    """Admin form for managing account types"""
+    
     class Meta:
         model = AccountType
         fields = ['name', 'category', 'minimum_balance', 'interest_rate', 'overdraft_limit', 'is_active']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., Premium Savings'}),
             'category': forms.Select(attrs={'class': 'form-select'}),
             'minimum_balance': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'interest_rate': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
@@ -201,7 +238,10 @@ class AccountTypeForm(forms.ModelForm):
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
+
 class AdminUserEditForm(forms.ModelForm):
+    """Admin form for editing users"""
+    
     class Meta:
         model = User
         fields = ['full_name', 'email', 'phone', 'address', 'city', 'state', 'pincode', 
@@ -221,7 +261,10 @@ class AdminUserEditForm(forms.ModelForm):
             'is_staff': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
+
 class ReportDateRangeForm(forms.Form):
+    """Form for selecting date range for reports"""
+    
     date_from = forms.DateField(
         widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         required=False
