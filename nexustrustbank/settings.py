@@ -68,13 +68,16 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',  # This handles CSRF
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'bankapp.middleware.SessionTimeoutMiddleware',
+    
+    # Custom middleware (order matters)
+    'bankapp.middleware.SecurityHeadersMiddleware',  # Add security headers
+    'bankapp.middleware.CSRFTokenMiddleware',       # Ensure CSRF token
+    'bankapp.middleware.SessionTimeoutMiddleware',  # Your original middleware
 ]
-
 ROOT_URLCONF = 'nexustrustbank.urls'
 
 # ======================================
