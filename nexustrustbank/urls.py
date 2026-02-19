@@ -4,8 +4,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),  # Django built-in admin (superuser only)
-    path('', include('bankapp.urls')),  # All custom URLs (user + bank admin)
+    path('admin/', admin.site.urls),      # Django built-in admin
+    path('', include('bankapp.urls')),    # Custom app URLs
 ]
 
 if settings.DEBUG:
